@@ -1,0 +1,77 @@
+name: Manual Input to CSV
+
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        type: choice
+        description: 'Directory Name of the Product'
+        required: true
+        options:
+          - AMD_MI100
+          - ARUBA_CX6300_CX6400
+          - ARUBA_CX8320
+          - ARUBA_CX8325
+          - ARUBA_CX8360
+          - GB_SVR_1264UP_C37
+          - GB_SVR_3264_C37
+          - GB_SVR_5264_C37
+          - HPE_EX235a
+          - HPE_EX235N
+          - HPE_EX420
+          - HPE_EX425
+          - HPE_EX425_Gen2
+          - INT_i210
+          - MTN_CCNC
+          - Other
+      location:
+        description: 'Select the dev firmware location'
+        type: choice
+        options:
+          - Morpheus
+          - Artifactory
+        required: true
+      link:
+        description: 'Enter the link'
+        required: true
+      product_name:
+        description: 'Enter product name'
+        required: true
+      version:
+        description: 'Enter product version'
+        required: true
+      type:
+        description: 'Enter product type'
+        type: choice
+        required: true
+        options:
+          - rpm
+          - swi
+          - scexe
+          - fwpkg
+          - tar.gz
+          - bin
+
+jobs:
+  save-to-csv:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Create or Append to CSV
+      run: |
+        # Check if the CSV file exists, if not create it
+        if [ ! -f data.csv ]; then
+          echo "Product,location,link,ProductName,Version,Type" > data.csv
+        fi
+        # Append the new data
+        echo "${{ github.event.inputs.product }},${{ github.event.inputs.location }},${{ github.event.inputs.link }},${{ github.event.inputs.product_name }},${{ github.event.inputs.version }},${{ github.event.inputs.type }}" >> data.csv
+
+    - name: Commit Changes
+      run: |
+        git config --local user.email "your_email@example.com"
+        git config --local user.name "GitHub Actions"
+        git add data.csv
+        git commit -m "Add new entry to CSV"
+        git push
