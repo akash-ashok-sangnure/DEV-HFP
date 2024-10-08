@@ -58,7 +58,7 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-
+ 
     - name: Create or Append to CSV
       run: |
         # Check if the CSV file exists, if not create it
@@ -67,11 +67,32 @@ jobs:
         fi
         # Append the new data
         echo "${{ github.event.inputs.product }},${{ github.event.inputs.location }},${{ github.event.inputs.link }},${{ github.event.inputs.product_name }},${{ github.event.inputs.version }},${{ github.event.inputs.type }}" >> data.csv
-
+    - name: Pull latest repo
+      run: |
+        git config --local user.email "akashsangnure0586@gmail.com"
+        git config --local user.name "GitHub Actions"
+        # Pulling original
+        git pull origin main || true
+ 
+    - name: Check for changes
+      id: changes
+      run: |
+        if git diff --quiet; then
+          echo "No changes made" && exit 0
+        else
+          echo "Changes made" && exit 1
+      continue-on-error: true
+ 
+    - name: Commit changes to csv if there are any
+      if: steps.changes.outcome == 'failure'  # Making sure there are changes
+      run: |
+        git add data.csv
+        git commit -m "adding to csv"
+ 
     - name: Commit Changes
       run: |
         git config --local user.email "akashsangnure0586@gmail.com"
         git config --local user.name "GitHub Actions"
         git add data.csv
-        git commit -m "Add new entry to CSV"
+        git commit -m "adding to csv file"
         git push
