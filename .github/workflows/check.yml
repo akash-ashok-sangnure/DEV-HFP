@@ -78,9 +78,13 @@ jobs:
       id: changes
       run: |
         if git diff --quiet; then
-          echo "No changes made" && exit 0
+          echo "No changes made"
+          echo "changes_detected=false" >> $GITHUB_ENV
         else
-          echo "Changes made" && exit 1
+          echo "Changes made"
+          echo "changes_detected=true" >> $GITHUB_ENV
+          exit 1
+        fi
       continue-on-error: true
  
     - name: Commit changes to csv if there are any
