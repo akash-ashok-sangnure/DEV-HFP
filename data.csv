@@ -1,3 +1,4 @@
 Product,location,link,ProductName,Version,Type
 AMD_MI100,Morpheus,link,ILo,1.x,rpm
 AMD_MI100,Artifactory,check_link,check_product,check_product,rpm
+HPE_EX235N,Artifactory,https://,HPE_EX,1.1.0,bin
